@@ -12,7 +12,7 @@ import MainLayout from '../components/layout/MainLayout'
 
 const Home = lazy(() => import('../pages/Home'))
 const Products = lazy(() => import('../pages/Products'))
-const ProductDetail = lazy(() => import('../pages/ProductDetail'))
+const ProductDetail = lazy(() => import('../pages/Products'))
 const Cart = lazy(() => import('../pages/Cart'))
 const Checkout = lazy(() => import('../pages/Checkout'))
 const Login = lazy(() => import('../pages/Login'))
@@ -22,7 +22,7 @@ const OrderHistory = lazy(() => import('../pages/OrderHistory'))
 const OrderDetail = lazy(() => import('../pages/OrderDetail'))
 const NotFound = lazy(() => import('../pages/NotFound'))
 
-// Admin pages
+// // Admin pages
 const Dashboard = lazy(() => import('../pages/admin/Dashboard'))
 const ManageProducts = lazy(() => import('../pages/admin/ManageProducts'))
 const ManageOrders = lazy(() => import('../pages/admin/ManageOrders'))
