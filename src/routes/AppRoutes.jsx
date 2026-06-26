@@ -12,7 +12,7 @@ import MainLayout from '../components/layout/MainLayout'
 
 const Home = lazy(() => import('../pages/Home'))
 const Products = lazy(() => import('../pages/Products'))
-const ProductDetail = lazy(() => import('../pages/Products'))
+const ProductDetail = lazy(() => import('../pages/ProductDetail'))
 const Cart = lazy(() => import('../pages/Cart'))
 const Checkout = lazy(() => import('../pages/Checkout'))
 const Login = lazy(() => import('../pages/Login'))
