@@ -1,6 +1,6 @@
 // frontend/src/components/layout/Footer.jsx
 import { Link } from 'react-router-dom'
-// import { Facebook, Twitter, Instagram, Mail } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Mail } from 'lucide-react'
 
 
 const Footer = () => {
@@ -17,12 +17,12 @@ const Footer = () => {
             <p className="text-sm text-gray-400 mt-3 leading-relaxed">
               Your one-stop destination for quality products at the best prices.
             </p>
-            {/* <div className="flex gap-3 mt-4">
+            <div className="flex gap-3 mt-4">
               <a href="#" className="hover:text-blue-400 transition-colors"><Facebook size={18} /></a>
               <a href="#" className="hover:text-blue-400 transition-colors"><Twitter size={18} /></a>
               <a href="#" className="hover:text-blue-400 transition-colors"><Instagram size={18} /></a>
               <a href="#" className="hover:text-blue-400 transition-colors"><Mail size={18} /></a>
-            </div> */}
+            </div>
           </div>
 
           {/* Shop Links */}
