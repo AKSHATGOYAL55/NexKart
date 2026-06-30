@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { useDispatch, useSelector } from 'react-redux'
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ShoppingCart,
   Star,
@@ -14,83 +14,80 @@ import {
   Minus,
   Plus,
   AlertCircle,
-} from 'lucide-react'
-import toast from 'react-hot-toast'
-import { getProduct } from '../api/product.api'
-import { addItemToCart } from '../features/cartSlice'
-import { formatCurrency } from '../utils/formatCurrency'
-import { formatDate } from '../utils/formatDate'
-import Spinner from '../components/common/Spinner'
-import Button from '../components/common/Button'
+} from "lucide-react";
+import toast from "react-hot-toast";
+import { getProduct } from "../api/product.api";
+import { addItemToCart } from "../features/cartSlice";
+import { formatCurrency } from "../utils/formatCurrency";
+import { formatDate } from "../utils/formatDate";
+import Spinner from "../components/common/Spinner";
+import Button from "../components/common/Button";
+import Image from '../components/common/Image'
 
 const ProductDetail = () => {
-  const { slug } = useParams()
+  const { slug } = useParams();
   // slug comes from the URL — /products/apple-iphone-15-pro
   // useParams reads it as slug = "apple-iphone-15-pro"
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { isAuthenticated } = useSelector((state) => state.auth)
-  const { isLoading: cartLoading } = useSelector((state) => state.cart)
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isLoading: cartLoading } = useSelector((state) => state.cart);
 
   // ── Local State ────────────────────────────────────
-  const [selectedImage, setSelectedImage] = useState(0)
-  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   // ── Fetch Product ──────────────────────────────────
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['product', slug],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["product", slug],
     queryFn: () => getProduct(slug).then((res) => res.data),
     staleTime: 1000 * 60 * 5,
-  })
+  });
 
-  const product = data?.product
+  const product = data?.product;
 
   // ── Image Navigation ───────────────────────────────
   const handlePrevImage = () => {
     setSelectedImage((prev) =>
-      prev === 0 ? product.images.length - 1 : prev - 1
-    )
-  }
+      prev === 0 ? product.images.length - 1 : prev - 1,
+    );
+  };
 
   const handleNextImage = () => {
     setSelectedImage((prev) =>
-      prev === product.images.length - 1 ? 0 : prev + 1
-    )
-  }
+      prev === product.images.length - 1 ? 0 : prev + 1,
+    );
+  };
 
   // ── Quantity Handlers ──────────────────────────────
   const handleDecreaseQty = () => {
-    setQuantity((prev) => Math.max(1, prev - 1))
-  }
+    setQuantity((prev) => Math.max(1, prev - 1));
+  };
 
   const handleIncreaseQty = () => {
-    setQuantity((prev) => Math.min(product?.stock || 1, prev + 1))
-  }
+    setQuantity((prev) => Math.min(product?.stock || 1, prev + 1));
+  };
 
   // ── Add to Cart ────────────────────────────────────
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      toast.error('Please login to add items to cart')
-      navigate('/login')
-      return
+      toast.error("Please login to add items to cart");
+      navigate("/login");
+      return;
     }
 
     const result = await dispatch(
-      addItemToCart({ productId: product._id, quantity })
-    )
+      addItemToCart({ productId: product._id, quantity }),
+    );
 
     if (addItemToCart.fulfilled.match(result)) {
-      toast.success(`${quantity} item(s) added to cart!`)
+      toast.success(`${quantity} item(s) added to cart!`);
     } else {
-      toast.error(result.payload || 'Failed to add to cart')
+      toast.error(result.payload || "Failed to add to cart");
     }
-  }
+  };
 
   // ── Loading State ──────────────────────────────────
   if (isLoading) {
@@ -98,7 +95,7 @@ const ProductDetail = () => {
       <div className="min-h-[60vh] flex items-center justify-center">
         <Spinner size="lg" text="Loading product..." />
       </div>
-    )
+    );
   }
 
   // ── Error State ────────────────────────────────────
@@ -112,31 +109,28 @@ const ProductDetail = () => {
         <p className="text-gray-500 text-sm">
           The product you're looking for doesn't exist or has been removed
         </p>
-        <Button onClick={() => navigate('/products')}>
-          Browse Products
-        </Button>
+        <Button onClick={() => navigate("/products")}>Browse Products</Button>
       </div>
-    )
+    );
   }
 
   // ── Derived Values ─────────────────────────────────
-  const hasDiscount = product.discountPrice > 0
-  const displayPrice = hasDiscount ? product.discountPrice : product.price
+  const hasDiscount = product.discountPrice > 0;
+  const displayPrice = hasDiscount ? product.discountPrice : product.price;
   const discountPercentage = hasDiscount
     ? Math.round(
-        ((product.price - product.discountPrice) / product.price) * 100
+        ((product.price - product.discountPrice) / product.price) * 100,
       )
-    : 0
-  const isOutOfStock = product.stock === 0
-  const hasImages = product.images?.length > 0
+    : 0;
+  const isOutOfStock = product.stock === 0;
+  const hasImages = product.images?.length > 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
       {/* ── Breadcrumb ───────────────────────────────── */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <button
-          onClick={() => navigate('/products')}
+          onClick={() => navigate("/products")}
           className="hover:text-blue-600 transition-colors"
         >
           Products
@@ -151,18 +145,24 @@ const ProductDetail = () => {
 
       {/* ── Main Product Section ─────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
-
         {/* ── Image Gallery ──────────────────────────── */}
         <div className="space-y-4">
-
           {/* Main Image */}
           <div className="relative bg-gray-50 rounded-2xl overflow-hidden aspect-square">
             {hasImages ? (
               <>
-                <img
+                {/* <img
                   src={product.images[selectedImage]?.url}
                   alt={product.name}
                   className="w-full h-full object-cover"
+                /> */}
+
+                <Image
+                  src={product.images[selectedImage]?.url}
+                  alt={product.name}
+                  wrapperClassName="w-full h-full"
+                  eager={true}
+                  // Product detail main image = above fold = load immediately
                 />
 
                 {/* Navigation arrows — only show if multiple images */}
@@ -189,9 +189,10 @@ const ProductDetail = () => {
                           onClick={() => setSelectedImage(idx)}
                           className={`
                             rounded-full transition-all
-                            ${selectedImage === idx
-                              ? 'w-4 h-2 bg-blue-600'
-                              : 'w-2 h-2 bg-white/60'
+                            ${
+                              selectedImage === idx
+                                ? "w-4 h-2 bg-blue-600"
+                                : "w-2 h-2 bg-white/60"
                             }
                           `}
                         />
@@ -223,9 +224,10 @@ const ProductDetail = () => {
                   onClick={() => setSelectedImage(idx)}
                   className={`
                     flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all
-                    ${selectedImage === idx
-                      ? 'border-blue-500 ring-2 ring-blue-200'
-                      : 'border-gray-200 hover:border-gray-300'
+                    ${
+                      selectedImage === idx
+                        ? "border-blue-500 ring-2 ring-blue-200"
+                        : "border-gray-200 hover:border-gray-300"
                     }
                   `}
                 >
@@ -242,16 +244,13 @@ const ProductDetail = () => {
 
         {/* ── Product Info ───────────────────────────── */}
         <div className="flex flex-col">
-
           {/* Brand + Category */}
           <div className="flex items-center gap-3 mb-2">
             <span className="text-blue-600 font-medium text-sm uppercase tracking-wide">
               {product.brand}
             </span>
             <span className="text-gray-300">|</span>
-            <span className="text-gray-500 text-sm">
-              {product.category}
-            </span>
+            <span className="text-gray-500 text-sm">{product.category}</span>
           </div>
 
           {/* Product Name */}
@@ -269,8 +268,8 @@ const ProductDetail = () => {
                     size={18}
                     className={
                       star <= Math.round(product.ratings.average)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'fill-gray-200 text-gray-200'
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "fill-gray-200 text-gray-200"
                     }
                   />
                 ))}
@@ -316,7 +315,7 @@ const ProductDetail = () => {
           <div className="flex items-center gap-2 mb-6">
             <div
               className={`w-2 h-2 rounded-full ${
-                isOutOfStock ? 'bg-red-500' : 'bg-green-500'
+                isOutOfStock ? "bg-red-500" : "bg-green-500"
               }`}
             />
             {isOutOfStock ? (
@@ -371,15 +370,23 @@ const ProductDetail = () => {
             className="w-full py-3 text-base mb-4"
           >
             <ShoppingCart size={20} />
-            {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
           </Button>
 
           {/* ── Trust Badges ─────────────────────────── */}
           <div className="grid grid-cols-3 gap-3 mt-2">
             {[
-              { icon: Truck, text: 'Free Delivery', sub: 'On orders over ₹500' },
-              { icon: RefreshCw, text: 'Easy Returns', sub: '7 day return policy' },
-              { icon: Shield, text: 'Secure Payment', sub: '100% protected' },
+              {
+                icon: Truck,
+                text: "Free Delivery",
+                sub: "On orders over ₹500",
+              },
+              {
+                icon: RefreshCw,
+                text: "Easy Returns",
+                sub: "7 day return policy",
+              },
+              { icon: Shield, text: "Secure Payment", sub: "100% protected" },
             ].map(({ icon: Icon, text, sub }) => (
               <div
                 key={text}
@@ -389,9 +396,7 @@ const ProductDetail = () => {
                 <span className="text-xs font-medium text-gray-800">
                   {text}
                 </span>
-                <span className="text-[10px] text-gray-500 mt-0.5">
-                  {sub}
-                </span>
+                <span className="text-[10px] text-gray-500 mt-0.5">{sub}</span>
               </div>
             ))}
           </div>
@@ -400,29 +405,27 @@ const ProductDetail = () => {
 
       {/* ── Description + Specs Tabs ─────────────────── */}
       <ProductTabs product={product} />
-
     </div>
-  )
-}
+  );
+};
 
 // ─────────────────────────────────────────────────────
 // TABS COMPONENT — Description and Specifications
 // ─────────────────────────────────────────────────────
 
 const ProductTabs = ({ product }) => {
-  const [activeTab, setActiveTab] = useState('description')
+  const [activeTab, setActiveTab] = useState("description");
 
   const tabs = [
-    { id: 'description', label: 'Description' },
+    { id: "description", label: "Description" },
     product.specifications?.size > 0 && {
-      id: 'specs',
-      label: 'Specifications',
+      id: "specs",
+      label: "Specifications",
     },
-  ].filter(Boolean)
+  ].filter(Boolean);
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
-
       {/* Tab Headers */}
       <div className="flex border-b border-gray-100">
         {tabs.map((tab) => (
@@ -431,9 +434,10 @@ const ProductTabs = ({ product }) => {
             onClick={() => setActiveTab(tab.id)}
             className={`
               px-6 py-4 text-sm font-medium transition-colors
-              ${activeTab === tab.id
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
+              ${
+                activeTab === tab.id
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 hover:text-gray-700"
               }
             `}
           >
@@ -444,13 +448,13 @@ const ProductTabs = ({ product }) => {
 
       {/* Tab Content */}
       <div className="p-6">
-        {activeTab === 'description' && (
+        {activeTab === "description" && (
           <p className="text-gray-700 leading-relaxed whitespace-pre-line">
             {product.description}
           </p>
         )}
 
-        {activeTab === 'specs' && product.specifications && (
+        {activeTab === "specs" && product.specifications && (
           <div className="overflow-hidden rounded-xl border border-gray-100">
             <table className="w-full text-sm">
               <tbody>
@@ -458,14 +462,14 @@ const ProductTabs = ({ product }) => {
                   ([key, value], idx) => (
                     <tr
                       key={key}
-                      className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                      className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}
                     >
                       <td className="py-3 px-4 font-medium text-gray-700 w-1/3 border-r border-gray-100">
                         {key}
                       </td>
                       <td className="py-3 px-4 text-gray-600">{value}</td>
                     </tr>
-                  )
+                  ),
                 )}
               </tbody>
             </table>
@@ -473,7 +477,7 @@ const ProductTabs = ({ product }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductDetail
+export default ProductDetail;
