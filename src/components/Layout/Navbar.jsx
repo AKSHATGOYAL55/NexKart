@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   ShoppingCart,
@@ -13,32 +13,28 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { logout } from '../../features/authSlice'
+import useSearchQuery from '../../hooks/useSearchQuery'
 
 const Navbar = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const dispatch = useDispatch()
 
-  // ── Redux state ────────────────────────────────────
   const { user, isAuthenticated } = useSelector((state) => state.auth)
   const { items } = useSelector((state) => state.cart)
 
-  // ── Local state ────────────────────────────────────
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
 
-  // ── Derived value ──────────────────────────────────
   const cartCount = items?.length || 0
 
-  // ── Handlers ───────────────────────────────────────
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/products?keyword=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchQuery('')
-      setIsMenuOpen(false)
-    }
-  }
+  // ── Shared search hook ─────────────────────────────
+  const {
+    inputValue,
+    handleChange,
+    handleSubmit,
+    handleClear,
+  } = useSearchQuery(400)
 
   const handleLogout = async () => {
     await dispatch(logout())
@@ -52,26 +48,37 @@ const Navbar = () => {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* ── Logo ──────────────────────────────────── */}
+          {/* ── Logo ──────────────────────────────── */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <span className="text-2xl font-bold text-blue-600">
               Nex<span className="text-gray-900">Kart</span>
             </span>
           </Link>
 
-          {/* ── Search Bar — Desktop only ─────────────── */}
+          {/* ── Search Bar — Desktop ──────────────── */}
           <form
-            onSubmit={handleSearch}
+            onSubmit={handleSubmit}
             className="hidden md:flex flex-1 max-w-xl mx-8"
           >
             <div className="relative w-full">
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for products, brands and more..."
+                value={inputValue}
+                onChange={(e) => handleChange(e.target.value)}
+                placeholder="Search products, brands and more..."
                 className="w-full bg-gray-100 border border-transparent rounded-full px-4 py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
               />
+
+              {inputValue && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                >
+                  <X size={14} />
+                </button>
+              )}
+
               <button
                 type="submit"
                 className="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 transition-colors"
@@ -81,10 +88,10 @@ const Navbar = () => {
             </div>
           </form>
 
-          {/* ── Right Side Actions ────────────────────── */}
+          {/* ── Right Side Actions ────────────────── */}
           <div className="flex items-center gap-4">
 
-            {/* Cart Icon — always visible */}
+            {/* Cart Icon */}
             <Link
               to="/cart"
               className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
@@ -110,10 +117,8 @@ const Navbar = () => {
                     </div>
                   </button>
 
-                  {/* Dropdown Menu */}
                   {isProfileOpen && (
                     <>
-                      {/* Backdrop to close dropdown on outside click */}
                       <div
                         className="fixed inset-0 z-10"
                         onClick={() => setIsProfileOpen(false)}
@@ -127,42 +132,34 @@ const Navbar = () => {
                             {user?.email}
                           </p>
                         </div>
-
                         <Link
                           to="/profile"
                           onClick={() => setIsProfileOpen(false)}
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
-                          <User size={16} />
-                          My Profile
+                          <User size={16} /> My Profile
                         </Link>
-
                         <Link
                           to="/orders"
                           onClick={() => setIsProfileOpen(false)}
                           className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
-                          <Package size={16} />
-                          My Orders
+                          <Package size={16} /> My Orders
                         </Link>
-
                         {user?.role === 'admin' && (
                           <Link
                             to="/admin"
                             onClick={() => setIsProfileOpen(false)}
                             className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                           >
-                            <LayoutDashboard size={16} />
-                            Admin Dashboard
+                            <LayoutDashboard size={16} /> Admin Dashboard
                           </Link>
                         )}
-
                         <button
                           onClick={handleLogout}
                           className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100 mt-1"
                         >
-                          <LogOut size={16} />
-                          Logout
+                          <LogOut size={16} /> Logout
                         </button>
                       </div>
                     </>
@@ -186,7 +183,7 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Toggle */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 text-gray-700"
@@ -196,19 +193,27 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* ── Mobile Menu ─────────────────────────────── */}
+        {/* ── Mobile Menu ──────────────────────────── */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-100 py-4 space-y-4">
-            {/* Mobile Search */}
-            <form onSubmit={handleSearch}>
+            <form onSubmit={handleSubmit}>
               <div className="relative">
                 <input
                   type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={inputValue}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder="Search products..."
                   className="w-full bg-gray-100 rounded-full px-4 py-2.5 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                {inputValue && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
                 <button
                   type="submit"
                   className="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-600 text-white rounded-full p-2"
@@ -218,11 +223,12 @@ const Navbar = () => {
               </div>
             </form>
 
-            {/* Mobile Auth Links */}
             {isAuthenticated ? (
               <div className="space-y-1">
                 <div className="px-2 py-2 mb-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {user?.name}
+                  </p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>
                 <Link
