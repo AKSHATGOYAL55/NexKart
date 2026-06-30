@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react'
 // Timer only fires when user stops typing for 500ms
 // Only THEN does the debounced value update → triggering the API call
 
-const useDebounce = (value, delay = 500) => {
+const useDebounce = (value, delay = 2000) => {
   const [debouncedValue, setDebouncedValue] = useState(value)
 
   useEffect(() => {

@@ -9,10 +9,23 @@ import store from './app/store'
 import App from './App.jsx'
 import './index.css'
 
+// const queryClient = new QueryClient({
+//   defaultOptions: {
+//     queries: {
+//       staleTime: 1000 * 60 * 5,
+//       retry: 1,
+//       refetchOnWindowFocus: false,
+//     },
+//   },
+// })
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 60 * 5,      // 5 minutes — data considered fresh
+      gcTime: 1000 * 60 * 30,         // 30 minutes — keep in memory cache
+      // gcTime (formerly cacheTime) keeps unused data in memory
+      // So when user goes back to products page, data is instant
       retry: 1,
       refetchOnWindowFocus: false,
     },
