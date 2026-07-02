@@ -23,20 +23,27 @@ const OrderDetail = lazy(() => import('../pages/OrderDetail'))
 const NotFound = lazy(() => import('../pages/NotFound'))
 
 // // Admin pages
-const Dashboard = lazy(() => import('../pages/admin/Dashboard'))
-const ManageProducts = lazy(() => import('../pages/admin/ManageProducts'))
-const ManageOrders = lazy(() => import('../pages/admin/ManageOrders'))
+// const Dashboard = lazy(() => import('../pages/admin/Dashboard'))
+// const Dashboard = lazy(() => import('../pages/admin/Dashboard'))
+const Dashboard = lazy(()=> import('../pages/Admin/Dashboard'))
+// const ManageProducts = lazy(() => import('../pages/admin/ManageProducts'))
+// const ManageOrders = lazy(() => import('../pages/admin/ManageOrders'))
+
+const ManageProducts = lazy(()=> import('../pages/Admin/ManageProducts'))
+const ManageOrders = lazy(()=> import('../pages/Admin/ManageOrders'))
 
 // ─────────────────────────────────────────────────────
 // LOADING FALLBACK
 // Shown while a lazy page is loading
 // ─────────────────────────────────────────────────────
 
-const PageLoader = () => (
-  <div className="min-h-[60vh] flex items-center justify-center">
-    <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-  </div>
-)
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+}
 
 const AppRoutes = () => {
   return (
