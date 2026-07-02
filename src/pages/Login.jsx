@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
 import { Mail, Lock } from 'lucide-react'
 import { login, clearError } from '../features/authSlice'
-import { loginSchema } from '../utils/validationSchemas'
+import { loginSchema } from '../utils/ValidationSchemas'
 import Input from '../components/common/Input'
 import Button from '../components/common/Button'
 

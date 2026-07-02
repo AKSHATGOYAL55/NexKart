@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
 import { register as registerUser, clearError } from '../features/authSlice'
-import { registerSchema } from '../utils/validationSchemas'
+import {registerSchema} from '../utils/ValidationSchemas'
 import Input from '../components/common/Input'
 import Button from '../components/common/Button'
 
