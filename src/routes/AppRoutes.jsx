@@ -23,12 +23,8 @@ const OrderDetail = lazy(() => import('../pages/OrderDetail'))
 const NotFound = lazy(() => import('../pages/NotFound'))
 
 // // Admin pages
-// const Dashboard = lazy(() => import('../pages/admin/Dashboard'))
-// const Dashboard = lazy(() => import('../pages/admin/Dashboard'))
-const Dashboard = lazy(()=> import('../pages/Admin/Dashboard'))
-// const ManageProducts = lazy(() => import('../pages/admin/ManageProducts'))
-// const ManageOrders = lazy(() => import('../pages/admin/ManageOrders'))
 
+const Dashboard = lazy(()=> import('../pages/Admin/Dashboard'))
 const ManageProducts = lazy(()=> import('../pages/Admin/ManageProducts'))
 const ManageOrders = lazy(()=> import('../pages/Admin/ManageOrders'))
 
