@@ -1,4 +1,4 @@
-// frontend/src/components/layout/Footer.jsx
+
 import { Link } from 'react-router-dom'
 // import { Facebook, Twitter, Instagram, Mail } from 'lucide-react'
 
