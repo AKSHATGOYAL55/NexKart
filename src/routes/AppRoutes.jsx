@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute'
 import AdminRoute from './AdminRoute'
+// import MainLayout from '../components/layout/MainLayout'
 import MainLayout from '../components/layout/MainLayout'
 
 // ─────────────────────────────────────────────────────
