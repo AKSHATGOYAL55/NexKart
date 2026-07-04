@@ -8,3 +8,21 @@
 .animate-shimmer {
   animation: shimmer 1.5s infinite linear;
 }
+
+/* ── Hide scrollbar but keep scroll functionality ── */
+/* Works on Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Works on Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
