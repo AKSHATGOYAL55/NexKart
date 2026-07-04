@@ -1,9 +1,20 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import {useLocation} from 'react-router-dom'
 import { fetchCurrentUser } from './features/authSlice'
 import { fetchCart } from './features/cartSlice'
 import AppRoutes from './routes/AppRoutes'
 
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
+
+  return null
+}
 const App = () => {
   const dispatch = useDispatch()
 
@@ -24,7 +35,12 @@ const App = () => {
       })
   }, [dispatch])
 
-  return <AppRoutes />
+  return (
+    <>
+      <ScrollToTop />
+      <AppRoutes />
+    </>
+  )
 }
 
 export default App
