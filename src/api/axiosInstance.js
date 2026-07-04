@@ -54,6 +54,15 @@ api.interceptors.response.use(
       !isRefreshTokenRequest
     ) {
       originalRequest._retry = true
+       const isRefreshRequest = originalRequest.url?.includes(
+      '/auth/refresh-token'
+    )
+     if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isRefreshRequest
+    ) {
+      originalRequest._retry = true
 
       try {
         // refreshToken cookie sent automatically (withCredentials)
@@ -74,6 +83,7 @@ api.interceptors.response.use(
         window.location.href = '/login'
         return Promise.reject(refreshError)
       }
+    }
     }
 
     return Promise.reject(error)
