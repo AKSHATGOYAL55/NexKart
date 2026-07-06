@@ -171,7 +171,7 @@ const Products = () => {
     urlKeyword || category || minPrice || maxPrice
 
   // ── Fetch products with React Query ───────────────
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isFetching } = useQuery({
     queryKey: [
       'products',
       urlKeyword,
@@ -192,7 +192,8 @@ const Products = () => {
         limit: 12,
       }).then((res) => res.data),
     staleTime: 1000 * 60 * 2,
-    keepPreviousData: true,
+    // keepPreviousData: true,
+     placeholderData: (prev) => prev,
   })
 
   const products = data?.products || []

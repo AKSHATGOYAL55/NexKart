@@ -1,49 +1,47 @@
 import { useState, useRef, useEffect } from 'react'
 
-// ─────────────────────────────────────────────────────
-// OPTIMIZED IMAGE COMPONENT
-// Solves 3 problems:
-// 1. Intersection Observer — only loads when visible in viewport
-// 2. Blur placeholder — shows while loading, no layout shift
-// 3. Error fallback — shows placeholder if image fails
-// 4. Once loaded — stays in memory, never re-fetches on scroll
-// ─────────────────────────────────────────────────────
-
 const Image = ({
   src,
   alt,
   className = '',
   wrapperClassName = '',
   fallback = null,
-  eager = false, // true = load immediately (above fold images)
+  eager = false,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isError, setIsError] = useState(false)
   const [isInView, setIsInView] = useState(eager)
-  // eager=true skips intersection observer
-  // use for hero images and above-the-fold content
-
-  const imgRef = useRef(null)
   const wrapperRef = useRef(null)
 
-  // ── Intersection Observer ──────────────────────────
-  // Only starts loading image when it enters the viewport
-  // rootMargin: '200px' = start loading 200px BEFORE entering view
-  // So by the time user sees it, image is already loaded
+  // Reset state when src changes (page navigation)
   useEffect(() => {
-    if (eager) return // skip for eager images
+    if (src) {
+      setIsLoaded(false)
+      setIsError(false)
+      if (eager) {
+        setIsInView(true)
+      } else {
+        setIsInView(false)
+      }
+    }
+  }, [src, eager])
+
+  useEffect(() => {
+    if (eager || !src) return
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsInView(true)
-            observer.disconnect() // stop observing once triggered
+            observer.disconnect()
           }
         })
       },
       {
-        rootMargin: '200px 0px', // start loading 200px before visible
+        // Start loading 400px before entering viewport
+        // More buffer = images ready before user sees them
+        rootMargin: '400px 0px',
         threshold: 0.01,
       }
     )
@@ -53,45 +51,38 @@ const Image = ({
     }
 
     return () => observer.disconnect()
-  }, [eager])
+  }, [eager, src])
 
   return (
     <div
       ref={wrapperRef}
       className={`relative overflow-hidden bg-gray-100 ${wrapperClassName}`}
     >
-      {/* ── Skeleton Placeholder ─────────────────────
-          Shows animated pulse while image loads
-          Same dimensions as image — prevents layout shift */}
-      {!isLoaded && !isError && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 bg-[length:200%_100%] animate-shimmer" />
+      {/* Skeleton */}
+      {!isLoaded && !isError && src && (
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-shimmer bg-[length:200%_100%]" />
       )}
 
-      {/* ── Actual Image ──────────────────────────────
-          Only renders src when isInView = true
-          This prevents browser from fetching it early */}
-      {isInView && !isError && (
+      {/* Image */}
+      {isInView && src && !isError && (
         <img
-          ref={imgRef}
           src={src}
           alt={alt}
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsError(true)}
           className={`
             w-full h-full object-cover
-            transition-opacity duration-300
+            transition-opacity duration-200
             ${isLoaded ? 'opacity-100' : 'opacity-0'}
             ${className}
           `}
-          // These attributes help browser optimize:
-          decoding="async"     // don't block main thread while decoding
-          fetchPriority={eager ? 'high' : 'low'}
+          decoding="async"
+          fetchPriority={eager ? 'high' : 'auto'}
         />
       )}
 
-      {/* ── Error Fallback ────────────────────────────
-          Shows when image URL is broken */}
-      {isError && (
+      {/* Error fallback */}
+      {(isError || !src) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 gap-2">
           {fallback || (
             <>
