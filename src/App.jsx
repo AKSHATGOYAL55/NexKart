@@ -24,9 +24,9 @@ const App = () => {
         // Try to restore session using refresh token cookie
         // Works on both desktop and mobile if cookie exists
         const result = await dispatch(fetchCurrentUser()).unwrap()
-        if (result) {
+        if (result?.user) {
           // Session restored — fetch cart too
-          dispatch(fetchCart())
+          await dispatch(fetchCart())
         }
       } catch (error) {
         // No valid session — user needs to login
