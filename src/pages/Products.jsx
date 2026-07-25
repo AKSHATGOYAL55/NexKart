@@ -171,30 +171,59 @@ const Products = () => {
     urlKeyword || category || minPrice || maxPrice
 
   // ── Fetch products with React Query ───────────────
+  // const { data, isLoading, error, isFetching } = useQuery({
+  //   queryKey: [
+  //     'products',
+  //     urlKeyword,
+  //     category,
+  //     sort,
+  //     minPrice,
+  //     maxPrice,
+  //     page,
+  //   ],
+  //   queryFn: () =>
+  //     getProducts({
+  //       keyword: urlKeyword,
+  //       category,
+  //       sort,
+  //       minPrice,
+  //       maxPrice,
+  //       page,
+  //       limit: 12,
+  //     }).then((res) => res.data),
+  //   staleTime: 1000 * 60 * 2,
+  //   // keepPreviousData: true,
+  //    placeholderData: (prev) => prev,
+  // })
+
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: [
-      'products',
-      urlKeyword,
+  queryKey: [
+    'products',
+    urlKeyword,
+    category,
+    sort,
+    minPrice,
+    maxPrice,
+    page,
+  ],
+  queryFn: async () => {
+    const response = await getProducts({
+      keyword: urlKeyword,
       category,
       sort,
       minPrice,
       maxPrice,
       page,
-    ],
-    queryFn: () =>
-      getProducts({
-        keyword: urlKeyword,
-        category,
-        sort,
-        minPrice,
-        maxPrice,
-        page,
-        limit: 12,
-      }).then((res) => res.data),
-    staleTime: 1000 * 60 * 2,
-    // keepPreviousData: true,
-     placeholderData: (prev) => prev,
-  })
+      limit: 12,
+    })
+    return response.data
+  },
+  staleTime: 1000 * 60 * 2,
+  placeholderData: (previousData) => previousData,
+  retry: 1,
+  // Don't throw error if backend is down
+  // show empty state instead of crashing
+})
 
   const products = data?.products || []
   const totalPages = data?.pages || 1

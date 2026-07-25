@@ -32,9 +32,11 @@ const api = axios.create({
 // Runs before every request — adds token to header
 api.interceptors.request.use(
   (config) => {
+    // console.log("Current token:", accessToken);
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
+    // console.log("Headers:", config.headers);
     return config
   },
   (error) => Promise.reject(error)

@@ -5,7 +5,6 @@ import { fetchCurrentUser } from './features/authSlice'
 import { fetchCart } from './features/cartSlice'
 import AppRoutes from './routes/AppRoutes'
 
-// Scroll to top on every route change
 const ScrollToTop = () => {
   const { pathname } = useLocation()
   useEffect(() => {
@@ -21,19 +20,17 @@ const App = () => {
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        // Try to restore session using refresh token cookie
-        // Works on both desktop and mobile if cookie exists
         const result = await dispatch(fetchCurrentUser()).unwrap()
         if (result?.user) {
-          // Session restored — fetch cart too
-          await dispatch(fetchCart())
+          dispatch(fetchCart()).catch(() => {})
         }
-      } catch (error) {
-        // No valid session — user needs to login
-        // This is normal for first-time visitors
+      } catch {
+        // Session expired or backend not running
+        // Either way — just show the app as logged out
+        // Don't crash or show error
       } finally {
-        // Always set restoring to false
-        // So app renders even if not logged in
+        // Always stop loading — even if backend is down
+        // Users can still see the UI
         setIsRestoring(false)
       }
     }
@@ -41,16 +38,24 @@ const App = () => {
     restoreSession()
   }, [dispatch])
 
-  // Show loading screen while restoring session
-  // Prevents flash of logged-out state on mobile refresh
+  // Show loading splash for max 3 seconds
+  // After that show app regardless of backend status
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsRestoring(false)
+    }, 3000)
+    return () => clearTimeout(timeout)
+  }, [])
+
   if (isRestoring) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="text-3xl font-bold text-blue-600 mb-3">
-            Nex<span className="text-gray-900">Kart</span>
+          <div className="text-3xl font-bold mb-4">
+            <span className="text-blue-600">Nex</span>
+            <span className="text-gray-900">Kart</span>
           </div>
-          <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-7 h-7 border-[3px] border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       </div>
     )
