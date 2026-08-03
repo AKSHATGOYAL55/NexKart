@@ -279,7 +279,7 @@ const Checkout = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                   <Input
                     label="Full Name"
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                     error={errors.fullName?.message}
                     {...register('fullName')}
                   />
