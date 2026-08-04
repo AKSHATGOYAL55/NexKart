@@ -130,68 +130,7 @@ const Checkout = () => {
     setCurrentStep(2)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-
-  // ── Step 3: Place order ─────────────────────────────
-  // const handlePlaceOrder = async () => {
-  //   setIsSubmitting(true)
-
-  //   try {
-  //     // Create order in MongoDB first
-  //     const orderData = {
-  //       shippingAddress: {
-  //         fullName: shippingData.fullName,
-  //         phone: shippingData.phone,
-  //         street: shippingData.street,
-  //         city: shippingData.city,
-  //         state: shippingData.state,
-  //         pincode: shippingData.pincode,
-  //       },
-  //       paymentMethod,
-  //       orderNotes: shippingData.orderNotes || '',
-  //     }
-
-  //     const response = await createOrder(orderData)
-  //     const order = response.data.order
-
-  //     // Clear cart in Redux
-  //     dispatch(resetCart())
-
-  //     // ── COD — no payment needed ─────────────────────
-  //     if (paymentMethod === 'cod') {
-  //       toast.success('Order placed successfully!')
-  //       navigate(`/orders/${order._id}`)
-  //       return
-  //     }
-
-  //     // ── Online payment via Razorpay ─────────────────
-  //     await initiatePayment({
-  //       amount: finalTotal,
-  //       orderId: order._id,
-  //       orderDetails: {
-  //         name: user?.name,
-  //         email: user?.email,
-  //         phone: shippingData.phone,
-  //       },
-  //       onSuccess: (paidOrder) => {
-  //         navigate(`/orders/${paidOrder._id}`)
-  //       },
-  //       onFailure: (error) => {
-  //         if (error !== 'cancelled') {
-  //           // Still navigate to order — user can retry payment
-  //           navigate(`/orders/${order._id}`)
-  //         }
-  //         setIsSubmitting(false)
-  //       },
-  //     })
-
-  //   } catch (error) {
-  //     toast.error(
-  //       error.response?.data?.message || 'Failed to place order'
-  //     )
-  //     setIsSubmitting(false)
-  //   }
-  // }
-
+  
  const handlePlaceOrder = async () => {
   setIsSubmitting(true)
 
