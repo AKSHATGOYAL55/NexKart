@@ -21,6 +21,7 @@ export const clearAccessToken = () => {
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   withCredentials: true,
+  timeout: 20000,
   // CRITICAL — sends httpOnly refreshToken cookie automatically
   // with every request to the backend
   headers: {
