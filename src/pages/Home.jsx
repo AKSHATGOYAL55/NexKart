@@ -70,6 +70,8 @@ const Home = () => {
     queryKey: ['featuredProducts'],
     queryFn: () => getFeaturedProducts().then((res) => res.data),
     staleTime: 1000 * 60 * 5,
+    retry: 3,
+  retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
   })
 
   const featuredProducts = data?.products || []
@@ -232,7 +234,7 @@ const Home = () => {
           </Link>
         </div>
 
-        {isLoading ? (
+        {/* {isLoading ? (
           <div className="flex justify-center py-16">
             <Spinner size="lg" text="Loading products..." />
           </div>
@@ -255,7 +257,40 @@ const Home = () => {
               <ProductCard key={product._id} product={product} eager={index < 4} />
             ))}
           </div>
-        )}
+        )} */}
+
+        {/* Featured Products */}
+{isLoading ? (
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse">
+        <div className="aspect-square bg-gray-200" />
+        <div className="p-4 space-y-3">
+          <div className="h-3 bg-gray-200 rounded w-1/3" />
+          <div className="h-3.5 bg-gray-200 rounded" />
+          <div className="h-3.5 bg-gray-200 rounded w-3/4" />
+          <div className="h-10 bg-gray-200 rounded-lg" />
+        </div>
+      </div>
+    ))}
+  </div>
+) : featuredProducts.length === 0 ? (
+  <div className="text-center py-16 bg-gray-50 rounded-2xl">
+    <p className="text-gray-400 text-sm">
+      No featured products yet
+    </p>
+  </div>
+) : (
+  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    {featuredProducts.map((product, index) => (
+      <ProductCard
+        key={product._id}
+        product={product}
+        eager={index < 4}
+      />
+    ))}
+  </div>
+)}
       </section>
 
       {/* ── PROMOTIONAL BANNER ───────────────────────── */}

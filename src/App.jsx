@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import { fetchCurrentUser } from './features/authSlice'
 import { fetchCart } from './features/cartSlice'
+import { startKeepAlive } from './utils/keepAlive'
 import AppRoutes from './routes/AppRoutes'
 
 const ScrollToTop = () => {
@@ -18,6 +19,9 @@ const App = () => {
   const [isRestoring, setIsRestoring] = useState(true)
 
   useEffect(() => {
+    // Start keep-alive ping immediately
+    const stopKeepAlive = startKeepAlive()
+
     const restoreSession = async () => {
       try {
         const result = await dispatch(fetchCurrentUser()).unwrap()
@@ -25,27 +29,24 @@ const App = () => {
           dispatch(fetchCart()).catch(() => {})
         }
       } catch {
-        // Session expired or backend not running
-        // Either way — just show the app as logged out
-        // Don't crash or show error
+        // No session — show public pages
       } finally {
-        // Always stop loading — even if backend is down
-        // Users can still see the UI
         setIsRestoring(false)
       }
     }
 
     restoreSession()
-  }, [dispatch])
 
-  // Show loading splash for max 3 seconds
-  // After that show app regardless of backend status
-  useEffect(() => {
+    // Safety timeout — show app after 3 seconds max
     const timeout = setTimeout(() => {
       setIsRestoring(false)
     }, 3000)
-    return () => clearTimeout(timeout)
-  }, [])
+
+    return () => {
+      stopKeepAlive()
+      clearTimeout(timeout)
+    }
+  }, [dispatch])
 
   if (isRestoring) {
     return (
@@ -56,6 +57,9 @@ const App = () => {
             <span className="text-gray-900">Kart</span>
           </div>
           <div className="w-7 h-7 border-[3px] border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-gray-400 text-xs mt-3">
+            Starting up...
+          </p>
         </div>
       </div>
     )
